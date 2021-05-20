@@ -30,8 +30,8 @@ describe IapJwtAssertion do
     end
 
     it 'returns the correct public key' do
-      expect(IapJwtAssertion::get_key('test1').to_text).to eq("Public-Key: (256 bit)\npub:\n    04:28:ee:e1:ec:61:93:99:09:7c:e6:ae:f2:90:4a:\n    fc:04:ba:ef:4f:55:21:fd:96:d5:ca:45:6a:3e:1a:\n    bf:61:8f:8d:d1:4b:72:2d:91:0f:e1:76:b0:c3:a0:\n    5b:8d:69:98:a0:2e:7a:d1:9b:f5:42:c3:e3:84:60:\n    83:9f:ad:cf:02\nASN1 OID: secp256k1\n")
-      expect(IapJwtAssertion::get_key('test3').to_text).to eq("Public-Key: (256 bit)\npub:\n    04:75:0f:bb:62:c7:a6:ab:9b:c9:d1:dc:06:31:40:\n    b7:ba:60:f6:e1:80:49:26:b0:6f:f0:8c:74:77:11:\n    b4:8a:b2:6d:92:95:a7:90:55:ad:73:ad:7f:ea:61:\n    61:59:cd:89:be:52:48:1a:eb:ea:15:92:1b:8b:cf:\n    f5:f8:c0:43:42\nASN1 OID: secp256k1\n")
+      expect(IapJwtAssertion::get_key('test1').to_text).to eq("Public-Key: (256 bit)\npub:\n    04:fd:24:72:43:de:57:00:db:38:0e:9a:a9:bf:ff:\n    78:3a:5b:ff:4b:a3:6f:e2:5d:bd:ca:9a:2d:b6:11:\n    a8:c0:a0:60:37:db:9b:8f:70:66:34:31:9f:20:30:\n    64:a0:6e:d7:39:8b:e0:f5:4a:06:a7:79:e3:e9:1b:\n    d7:17:99:99:19\nASN1 OID: prime256v1\nNIST CURVE: P-256\n")
+      expect(IapJwtAssertion::get_key('test3').to_text).to eq("Public-Key: (256 bit)\npub:\n    04:ea:87:83:95:76:8e:52:43:42:b1:a7:32:d2:f9:\n    b3:62:10:87:df:d3:1b:df:51:80:5b:ba:ec:c1:c9:\n    ea:f0:ed:7c:4c:3d:5a:11:97:46:34:24:77:77:3d:\n    c5:9e:4d:d9:cb:97:6b:03:fd:e1:a0:11:a6:0c:71:\n    11:87:42:16:a1\nASN1 OID: prime256v1\nNIST CURVE: P-256\n")
     end
   end
 end
