@@ -1,7 +1,7 @@
 require 'iap_jwt_assertion'
 
 describe IapJwtAssertion do
-  describe '.fetch_public_keys' do
+  describe '#fetch_public_keys' do
     it 'returns hash' do
       expect(IapJwtAssertion::fetch_public_keys).to be_a(Hash)
     end
@@ -11,7 +11,7 @@ describe IapJwtAssertion do
     end
   end
 
-  describe '.get_key' do
+  describe '#get_key' do
     # override fetch_public_keys so that we can test with our own keys
     before :each do
       IapJwtAssertion.instance_eval do
@@ -19,7 +19,7 @@ describe IapJwtAssertion do
           response = File.read('spec/test-keys/public_key.json')
           response_hash = JSON.parse(response)
           public_keys = response_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
-          
+
           return public_keys
         end
       end
