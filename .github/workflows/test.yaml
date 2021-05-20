@@ -16,5 +16,9 @@ jobs:
     - uses: actions/setup-ruby@v1
       with:
         ruby-version: '2.7'
+    - name: Install gems
+      run: |
+        gem install bundler
+        bundle install
     - name: Run tests
       run: bundle exec rspec
