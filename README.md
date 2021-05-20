@@ -34,4 +34,7 @@ end
 ```ruby
 claims = IapJwtAssertion::decode request.headers['x-goog-iap-jwt-assertion']
 # => {"aud"=>"/projects/123456789012/global/backendServices/1234567890123456789", "email"=>"username@example.com", "exp"=>1615284964, "hd"=>"example.com", "iat"=>1615284364, "iss"=>"https://cloud.google.com/iap", "sub"=>"accounts.google.com:123456789012345678901"}
+
+claims['email']
+# => "username@example.com"
 ```
