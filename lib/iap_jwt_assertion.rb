@@ -9,11 +9,21 @@ module IapJwtAssertion
 
   module_function
 
-  def authenticate token
+  def authenticate? token, aud:
     kid = get_kid(token)
     pubkey = get_key(kid)
 
-    return JWT.decode(token, pubkey, true, {algorithm: ALGORITHM})
+    begin
+      payload = JWT.decode(token, pubkey, true, {algorithm: ALGORITHM})
+
+      if payload['aud'] != aud
+        return false
+      end
+    rescue => e
+      return false
+    end
+
+    return true
   end
 
   def decode token
