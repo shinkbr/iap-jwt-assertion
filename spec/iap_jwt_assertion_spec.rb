@@ -34,4 +34,29 @@ describe IapJwtAssertion do
       expect(IapJwtAssertion::get_key('test3').to_text).to eq("Public-Key: (256 bit)\npub:\n    04:ea:87:83:95:76:8e:52:43:42:b1:a7:32:d2:f9:\n    b3:62:10:87:df:d3:1b:df:51:80:5b:ba:ec:c1:c9:\n    ea:f0:ed:7c:4c:3d:5a:11:97:46:34:24:77:77:3d:\n    c5:9e:4d:d9:cb:97:6b:03:fd:e1:a0:11:a6:0c:71:\n    11:87:42:16:a1\nASN1 OID: prime256v1\nNIST CURVE: P-256\n")
     end
   end
+
+  describe '#decode' do
+    it 'decodes JWT' do
+      kid = 'test1'
+      file = File.read('spec/test-keys/private_key.json')
+      file_hash = JSON.parse(file)
+      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+
+      payload = {
+        'aud': '/projects/123456789012/global/backendServices/1234567890123456789',
+        'email': 'username@example.com',
+        'exp': (Time.now + 300).to_i,
+        'hd': 'example.com',
+        'iat': (Time.now - 10).to_i,
+        'iss': 'https://cloud.google.com/iap',
+        'sub': 'accounts.google.com:123456789012345678901'
+      }
+
+      token = JWT.encode payload, private_keys[kid], algorithm='ES256', header_fields={kid: kid}
+      decoded_token = IapJwtAssertion::decode token
+
+      expect(decoded_token.first['email']).to eq('username@example.com')
+      expect(decoded_token.last['kid']).to eq(kid)
+    end
+  end
 end
