@@ -1,17 +1,17 @@
-# iap_jwt_assertion
+# iap-jwt-assertion
 
 A Ruby gem for parsing and verifying Google Identity Aware Proxy's [signed JWT header](https://cloud.google.com/iap/docs/signed-headers-howto).
 
 ## Installing
 ### Using Rubygems:
 ```
-gem install iap_jwt_assertion
+gem install iap-jwt-assertion
 ```
 
 ### Using Bundler:
 Add the following to your Gemfile.
 ```
-gem 'iap_jwt_assertion'
+gem 'iap-jwt-assertion'
 ```
 
 And run `bundle install`
