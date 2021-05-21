@@ -4,7 +4,6 @@ require 'jwt'
 
 module IapJwtAssertion
   ALGORITHM = 'ES256'
-  ASSERTION_HEADER_NAME = 'x-goog-iap-jwt-assertion'
   PUBLIC_KEYS_URL = 'https://www.gstatic.com/iap/verify/public_key'
 
   module_function
@@ -14,7 +13,7 @@ module IapJwtAssertion
     pubkey = get_key(kid)
 
     begin
-      payload = JWT.decode(token, pubkey, true, {algorithm: ALGORITHM})
+      payload, header = JWT.decode(token, pubkey, true, {algorithm: ALGORITHM})
 
       if payload['aud'] != aud
         return false
@@ -34,7 +33,8 @@ module IapJwtAssertion
   end
 
   def get_kid token
-    JWT.decode(token, nil, false).last['kid']
+    payload, header = JWT.decode(token, nil, false)
+    return header['kid']
   end
 
   def get_key kid
