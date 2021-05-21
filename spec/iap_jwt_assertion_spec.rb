@@ -59,4 +59,29 @@ describe IapJwtAssertion do
       expect(decoded_token.last['kid']).to eq(kid)
     end
   end
+
+  describe '#get_kid' do
+    it 'retrieves kid from JWT' do
+      file = File.read('spec/test-keys/private_key.json')
+      file_hash = JSON.parse(file)
+      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+
+      payload = {
+        'aud': '/projects/123456789012/global/backendServices/1234567890123456789',
+        'email': 'username@example.com',
+        'exp': (Time.now + 300).to_i,
+        'hd': 'example.com',
+        'iat': (Time.now - 10).to_i,
+        'iss': 'https://cloud.google.com/iap',
+        'sub': 'accounts.google.com:123456789012345678901'
+      }
+
+      ['test1', 'test3'].each do |kid|
+        token = JWT.encode payload, private_keys[kid], algorithm='ES256', header_fields={kid: kid}
+        decoded_kid = IapJwtAssertion::get_kid token
+
+        expect(decoded_kid).to eq(kid)
+      end
+    end
+  end
 end
