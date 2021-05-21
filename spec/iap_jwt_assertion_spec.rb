@@ -14,6 +14,12 @@ describe IapJwtAssertion do
     end
   end
 
+  def get_test_private_keys
+    file = File.read('spec/test-keys/private_key.json')
+    file_hash = JSON.parse(file)
+    return file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+  end
+
   describe '#fetch_public_keys' do
     it 'returns hash' do
       expect(IapJwtAssertion::fetch_public_keys).to be_a(Hash)
@@ -38,9 +44,7 @@ describe IapJwtAssertion do
   describe '#decode' do
     it 'decodes JWT' do
       kid = 'test1'
-      file = File.read('spec/test-keys/private_key.json')
-      file_hash = JSON.parse(file)
-      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+      private_keys = get_test_private_keys
 
       payload = {
         'aud': '/projects/123456789012/global/backendServices/1234567890123456789',
@@ -53,18 +57,16 @@ describe IapJwtAssertion do
       }
 
       token = JWT.encode payload, private_keys[kid], algorithm='ES256', header_fields={kid: kid}
-      decoded_token = IapJwtAssertion::decode token
+      payload, header = IapJwtAssertion::decode token
 
-      expect(decoded_token.first['email']).to eq('username@example.com')
-      expect(decoded_token.last['kid']).to eq(kid)
+      expect(payload['email']).to eq('username@example.com')
+      expect(header['kid']).to eq(kid)
     end
   end
 
   describe '#get_kid' do
     it 'retrieves kid from JWT' do
-      file = File.read('spec/test-keys/private_key.json')
-      file_hash = JSON.parse(file)
-      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+      private_keys = get_test_private_keys
 
       payload = {
         'aud': '/projects/123456789012/global/backendServices/1234567890123456789',
@@ -78,9 +80,9 @@ describe IapJwtAssertion do
 
       ['test1', 'test3'].each do |kid|
         token = JWT.encode payload, private_keys[kid], algorithm='ES256', header_fields={kid: kid}
-        decoded_kid = IapJwtAssertion::get_kid token
+        retrieved_kid = IapJwtAssertion::get_kid token
 
-        expect(decoded_kid).to eq(kid)
+        expect(retrieved_kid).to eq(kid)
       end
     end
   end
@@ -92,10 +94,7 @@ describe IapJwtAssertion do
 
     it 'verifies signature' do
       aud = '/projects/123456789012/global/backendServices/1234567890123456789'
-
-      file = File.read('spec/test-keys/private_key.json')
-      file_hash = JSON.parse(file)
-      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+      private_keys = get_test_private_keys
 
       payload = {
         'aud': aud,
@@ -119,10 +118,7 @@ describe IapJwtAssertion do
     it 'verifies aud' do
       kid = 'test1'
       aud = '/projects/123456789012/global/backendServices/1234567890123456789'
-
-      file = File.read('spec/test-keys/private_key.json')
-      file_hash = JSON.parse(file)
-      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+      private_keys = get_test_private_keys
 
       payload = {
         'aud': aud,

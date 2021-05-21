@@ -4,7 +4,6 @@ require 'jwt'
 
 module IapJwtAssertion
   ALGORITHM = 'ES256'
-  ASSERTION_HEADER_NAME = 'x-goog-iap-jwt-assertion'
   PUBLIC_KEYS_URL = 'https://www.gstatic.com/iap/verify/public_key'
 
   module_function
