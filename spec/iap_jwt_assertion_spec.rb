@@ -84,4 +84,63 @@ describe IapJwtAssertion do
       end
     end
   end
+
+  describe '#authenticate?' do
+    before :each do
+      override_fetch_public_keys
+    end
+
+    it 'verifies signature' do
+      aud = '/projects/123456789012/global/backendServices/1234567890123456789'
+
+      file = File.read('spec/test-keys/private_key.json')
+      file_hash = JSON.parse(file)
+      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+
+      payload = {
+        'aud': aud,
+        'email': 'username@example.com',
+        'exp': (Time.now + 300).to_i,
+        'hd': 'example.com',
+        'iat': (Time.now - 10).to_i,
+        'iss': 'https://cloud.google.com/iap',
+        'sub': 'accounts.google.com:123456789012345678901'
+      }
+      
+      # signed by correct key
+      token = JWT.encode payload, private_keys['test1'], algorithm='ES256', header_fields={kid: 'test1'}
+      expect(IapJwtAssertion::authenticate? token, aud: aud).to eq(true)
+
+      # signed by wrong key
+      token = JWT.encode payload, private_keys['test1'], algorithm='ES256', header_fields={kid: 'test2'}
+      expect(IapJwtAssertion::authenticate? token, aud: aud).to eq(false)
+    end
+
+    it 'verifies aud' do
+      kid = 'test1'
+      aud = '/projects/123456789012/global/backendServices/1234567890123456789'
+
+      file = File.read('spec/test-keys/private_key.json')
+      file_hash = JSON.parse(file)
+      private_keys = file_hash.map {|kid, pubkey| [kid, OpenSSL::PKey::EC.new(pubkey)]}.to_h
+
+      payload = {
+        'aud': aud,
+        'email': 'username@example.com',
+        'exp': (Time.now + 300).to_i,
+        'hd': 'example.com',
+        'iat': (Time.now - 10).to_i,
+        'iss': 'https://cloud.google.com/iap',
+        'sub': 'accounts.google.com:123456789012345678901'
+      }
+      
+      token = JWT.encode payload, private_keys[kid], algorithm='ES256', header_fields={kid: kid}
+
+      # correct aud
+      expect(IapJwtAssertion::authenticate? token, aud: aud).to eq(true)
+
+      # wrong aud
+      expect(IapJwtAssertion::authenticate? token, aud: '/projects/000000000000/global/backendServices/0000000000000000000').to eq(false)
+    end
+  end
 end
