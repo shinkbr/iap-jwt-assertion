@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'iap-jwt-assertion'
-  s.version     = '0.0.0'
+  s.version     = '0.1.0'
   s.summary     = "A Ruby gem for handling Google Identity Aware Proxy's signed JWT header."
   s.authors     = ["shinkbr"]
   s.email       = 'shinkbr@gmail.com'
