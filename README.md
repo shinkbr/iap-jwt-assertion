@@ -30,6 +30,8 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+`aud` is required in order to prevent forgery of the signed JWT header.
+
 ### Extracting payload from the JWT header
 ```ruby
 payload, header = IapJwtAssertion::decode request.headers['x-goog-iap-jwt-assertion']
